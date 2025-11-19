@@ -20,7 +20,7 @@
 
 ```bash
 # 1. Клонируйте репозиторий
-git clone <repository-url>
+git clone https://github.com/fegerV/Fozzy-vpn
 cd Fozzy-wpn
 
 # 2. Запустите автоматическую настройку
