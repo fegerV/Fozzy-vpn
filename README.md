@@ -42,7 +42,7 @@ Fozzy-wpn/
 
 ```bash
 # Клонирование репозитория
-git clone <repository-url>
+git clone https://github.com/fegerV/Fozzy-vpn
 cd Fozzy-wpn
 
 # Быстрая настройка безопасности
