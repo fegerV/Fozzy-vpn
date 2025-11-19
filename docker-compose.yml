@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: vpn_bot_db
+    environment:
+      POSTGRES_DB: vpn_bot
+      POSTGRES_USER: vpn_user
+      POSTGRES_PASSWORD: vpn_password
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+
+  bot:
+    build: .
+    container_name: vpn_bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_TELEGRAM_ID=${ADMIN_TELEGRAM_ID}
+      - DATABASE_URL=postgresql+asyncpg://vpn_user:vpn_password@postgres:5432/vpn_bot
+      - XUI_PANEL_URL=${XUI_PANEL_URL}
+      - XUI_USERNAME=${XUI_USERNAME}
+      - XUI_PASSWORD=${XUI_PASSWORD}
+      - CRYPTO_WALLET_BTC=${CRYPTO_WALLET_BTC}
+      - CRYPTO_WALLET_USDT=${CRYPTO_WALLET_USDT}
+      - PRICE_1_DAY=${PRICE_1_DAY:-5}
+      - PRICE_1_WEEK=${PRICE_1_WEEK:-15}
+      - PRICE_1_MONTH=${PRICE_1_MONTH:-25}
+      - PRICE_6_MONTHS=${PRICE_6_MONTHS:-120}
+      - PRICE_1_YEAR=${PRICE_1_YEAR:-200}
+      - VPN_INBOUND_ID=${VPN_INBOUND_ID:-1}
+      - DEFAULT_DATA_LIMIT_GB=${DEFAULT_DATA_LIMIT_GB:-1000}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    volumes:
+      - ./data/bot:/app/data
+
+networks:
+  vpn_bot_network:
+    driver: bridge
