@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Системное обслуживание | Технические работы</title>
+    <meta name="description" content="Сайт находится на техническом обслуживании. Скоро вернемся.">
+    <meta name="robots" content="noindex, nofollow">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(102, 126, 234, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(102, 126, 234, 0);
+            }
+        }
+
+        .icon svg {
+            width: 40px;
+            height: 40px;
+            fill: white;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .status {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .status-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .status-label {
+            color: #6c757d;
+        }
+
+        .status-value {
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-maintenance {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .progress {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            animation: progress 2s ease-out;
+        }
+
+        @keyframes progress {
+            from {
+                width: 0;
+            }
+        }
+
+        .contact {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .contact-title {
+            font-size: 16px;
+            color: #6c757d;
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            font-size: 14px;
+            color: #adb5bd;
+            margin-bottom: 5px;
+        }
+
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+            color: #adb5bd;
+        }
+
+        .tech-info {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .tech-info .line {
+            margin-bottom: 5px;
+            color: #495057;
+        }
+
+        .tech-info .success {
+            color: #28a745;
+        }
+
+        .tech-info .warning {
+            color: #ffc107;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.66-.07-1l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.39-1.06-.73-1.69-.98l-.37-2.65A.506.506 0 0 0 14 2h-4c-.25 0-.46.18-.5.42l-.37 2.65c-.63.25-1.17.59-1.69.98l-2.49-1c-.22-.08-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64L4.57 11c-.04.34-.07.67-.07 1c0 .33.03.65.07.97l-2.11 1.66c-.19.15-.25.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1.01c.52.4 1.06.74 1.69.99l.37 2.65c.04.24.25.42.5.42h4c.25 0 .46-.18.5-.42l.37-2.65c.63-.26 1.17-.59 1.69-.99l2.49 1.01c.22.08.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.66Z"/>
+            </svg>
+        </div>
+
+        <h1>Системное обслуживание</h1>
+        <p class="subtitle">
+            Наш сервер находится на плановом техническом обслуживании.<br>
+            Мы работаем над улучшением сервиса для вас.
+        </p>
+
+        <div class="status">
+            <div class="status-item">
+                <span class="status-label">Статус системы</span>
+                <span class="status-value status-maintenance">Обслуживание</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Прогресс работ</span>
+                <span class="status-value status-active">75%</span>
+            </div>
+            <div class="status-item">
+                <span class="status-label">Предполагаемое время</span>
+                <span class="status-value status-active">~2 часа</span>
+            </div>
+        </div>
+
+        <div class="progress">
+            <div class="progress-bar" style="width: 75%"></div>
+        </div>
+
+        <div class="tech-info">
+            <div class="line">> System Status: <span class="warning">MAINTENANCE_MODE</span></div>
+            <div class="line">> Services: <span class="success">ONLINE</span> | <span class="warning">UPDATING</span></div>
+            <div class="line">> Database: <span class="success">CONNECTED</span></div>
+            <div class="line">> Cache: <span class="success">CLEARED</span></div>
+            <div class="line">> Load Average: 2.34, 2.11, 1.87</div>
+            <div class="line">> Uptime: 45 days, 12:34:56</div>
+        </div>
+
+        <div class="contact">
+            <p class="contact-title">Техническая поддержка</p>
+            <p class="contact-info">Email: support@example.com</p>
+            <p class="contact-info">Время ответа: в течение 24 часов</p>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 Системное администрирование. Все права защищены.</p>
+            <p>Server ID: SRV-2024-0847</p>
+        </div>
+    </div>
+
+    <script>
+        // Обновление времени каждую секунду
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('ru-RU');
+            const dateString = now.toLocaleDateString('ru-RU');
+            
+            // Можно добавить элемент для отображения времени
+            console.log(`Current time: ${dateString} ${timeString}`);
+        }
+
+        setInterval(updateTime, 1000);
+
+        // Анимация прогресса
+        let progress = 75;
+        setInterval(() => {
+            if (progress < 100) {
+                progress += Math.random() * 2;
+                if (progress > 100) progress = 100;
+                
+                const progressBar = document.querySelector('.progress-bar');
+                const progressValue = document.querySelector('.status-value:nth-child(2)');
+                
+                progressBar.style.width = progress + '%';
+                progressValue.textContent = Math.floor(progress) + '%';
+                
+                if (progress >= 100) {
+                    progressValue.textContent = 'Завершено';
+                    progressValue.className = 'status-value status-active';
+                    document.querySelector('.status-value:nth-child(1)').textContent = 'Активен';
+                    document.querySelector('.status-value:nth-child(1)').className = 'status-value status-active';
+                }
+            }
+        }, 5000);
+
+        // Предотвращение правого клика
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        
+        // Предотвращение выделения текста
+        document.addEventListener('selectstart', e => e.preventDefault());
+    </script>
+</body>
+</html>

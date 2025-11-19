@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     
     # Database
     database_url: str
+    postgres_password: str = "vpn_password"
     
     # 3x-ui Panel
     xui_panel_url: str
@@ -30,6 +31,30 @@ class Settings(BaseSettings):
     # VPN Settings
     vpn_inbound_id: int = 1
     default_data_limit_gb: int = 1000
+    
+    # Security Settings
+    max_login_attempts: int = 3
+    session_timeout_minutes: int = 30
+    rate_limit_requests_per_minute: int = 10
+    
+    # Monitoring Settings
+    enable_monitoring: bool = True
+    monitoring_interval_seconds: int = 300
+    alert_email: Optional[str] = None
+    
+    # Backup Settings
+    enable_auto_backup: bool = True
+    backup_retention_days: int = 30
+    
+    # SSL/TLS Settings
+    ssl_cert_path: Optional[str] = None
+    ssl_key_path: Optional[str] = None
+    
+    # Domain Settings
+    domain_name: Optional[str] = None
+    
+    # Grafana Settings
+    grafana_password: str = "admin123"
     
     class Config:
         env_file = ".env"
