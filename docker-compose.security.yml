@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: vpn_bot_db
+    environment:
+      POSTGRES_DB: vpn_bot
+      POSTGRES_USER: vpn_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./backups:/backups
+    ports:
+      - "127.0.0.1:5432:5432"  # Только локальный доступ
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vpn_user -d vpn_bot"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  bot:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: vpn_bot
+    environment:
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - ADMIN_TELEGRAM_ID=${ADMIN_TELEGRAM_ID}
+      - DATABASE_URL=postgresql+asyncpg://vpn_user:${POSTGRES_PASSWORD}@postgres:5432/vpn_bot
+      - XUI_PANEL_URL=${XUI_PANEL_URL}
+      - XUI_USERNAME=${XUI_USERNAME}
+      - XUI_PASSWORD=${XUI_PASSWORD}
+      - CRYPTO_WALLET_BTC=${CRYPTO_WALLET_BTC}
+      - CRYPTO_WALLET_USDT=${CRYPTO_WALLET_USDT}
+      - PRICE_1_DAY=${PRICE_1_DAY:-5}
+      - PRICE_1_WEEK=${PRICE_1_WEEK:-15}
+      - PRICE_1_MONTH=${PRICE_1_MONTH:-25}
+      - PRICE_6_MONTHS=${PRICE_6_MONTHS:-120}
+      - PRICE_1_YEAR=${PRICE_1_YEAR:-200}
+      - VPN_INBOUND_ID=${VPN_INBOUND_ID:-1}
+      - DEFAULT_DATA_LIMIT_GB=${DEFAULT_DATA_LIMIT_GB:-1000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    volumes:
+      - ./data/bot:/app/data
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health', timeout=5)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /app/cache
+    user: "1000:1000"
+
+  nginx:
+    image: nginx:alpine
+    container_name: vpn_bot_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./configs/nginx-stub.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./configs/stub-page.html:/var/www/html/index.html:ro
+      - ./ssl:/etc/ssl:ro
+      - ./logs/nginx:/var/log/nginx
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    user: "101:101"
+
+  # Мониторинг (опционально)
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: vpn_bot_prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./data/prometheus:/prometheus
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    profiles:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: vpn_bot_grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin123}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    profiles:
+      - monitoring
+
+  # Резервное копирование
+  backup:
+    image: alpine:latest
+    container_name: vpn_bot_backup
+    volumes:
+      - ./data:/data:ro
+      - ./backups:/backups
+      - ./scripts/backup.sh:/backup.sh:ro
+    environment:
+      - BACKUP_SCHEDULE=${BACKUP_SCHEDULE:-0 2 * * *}
+    command: >
+      sh -c "
+        apk add --no-cache docker-client postgresql-client tar gzip &&
+        chmod +x /backup.sh &&
+        while true; do
+          echo 'Waiting for scheduled backup time...' &&
+          sleep 3600 &&
+          /backup.sh full
+        done
+      "
+    restart: unless-stopped
+    networks:
+      - vpn_bot_network
+    profiles:
+      - backup
+
+networks:
+  vpn_bot_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+    internal: false
+
+volumes:
+  postgres_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
